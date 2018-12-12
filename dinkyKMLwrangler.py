@@ -1,8 +1,8 @@
 
 import math
 
-class MyLittleProjection(object):
-    pass
+# class MyLittleProjection(object):
+#     pass
 
 
 _CENTER_LAT = 35.72777
@@ -14,8 +14,9 @@ _NS_DIST_MULTIPLIER = 364360.587001507
 
 class ptsPoint(object):
 
-    def __init__(self, LatLongZ=None, XYZ=None):
+    def __init__(self, orderNumber, LatLongZ=None, XYZ=None):
         if not LatLongZ == None:
+            self.orderNumber = float(orderNumber)
             parsed = LatLongZ.strip().split(',')
             self.long = float(parsed[0])
             self.lat = float(parsed[1])
@@ -32,12 +33,14 @@ class ptsPoint(object):
                                       "work for known XYZ coordinates.")
 
     def __str__(self):
-        return "N: {0:0.4f}  E: {1:0.4f}".format(self.northing, self.easting)
+        return "#: {4:0.2f} Lat: {2:0.5f}  Long: {3:0.5f}    N: {0:0.4f}  " \
+               "E: {1:0.4f}".format(self.northing, self.easting, self.lat,
+                                self.long, self.orderNumber)
 
 if __name__ == '__main__':
     testPtExpectedEasting = 2091925.0
     testPtExpectedNorthing = 720814.0
-    testPt = ptsPoint(LatLongZ='-78.690272,35.730155,100.0')
+    testPt = ptsPoint(0.0, LatLongZ='-78.690272,35.730155,100.0')
     try:
         assert math.isclose(testPtExpectedEasting, testPt.easting,
                             abs_tol=1.25)
@@ -67,6 +70,7 @@ class DinkyKML(object):
             self.footerLines = []
             stateList = ['headers', 'line_coords', 'footers']
             state = stateList[0]
+            seqNumber = 0
             for aLine in allLines:
                 if state == 'headers':
                     self.headerLines.append(aLine)
@@ -77,7 +81,8 @@ class DinkyKML(object):
                         state = 'footers'
                         self.footerLines.append(aLine)
                     else:
-                        self.pointSequence.append(ptsPoint(aLine))
+                        self.pointSequence.append(ptsPoint(seqNumber, aLine))
+                        seqNumber += 1
                 elif state == 'footers':
                     self.footerLines.append(aLine)
         return
