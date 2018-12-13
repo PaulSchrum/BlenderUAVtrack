@@ -17,10 +17,10 @@ try:
 except:
     pass
 
-import dinkyKMLwrangler as dKw
+# import dinkyKMLwrangler as dKw
 
 testFile = r"D:\SourceModules\Python\BlenderUAVtrack\testData\Afarm_Flight1.kml"
-pointSequence = dKw.DinkyKML(testFile)
+# pointSequence = dKw.DinkyKML(testFile)
 
 # class PathEditor(bpy.types.Panel):
 class PathEditor(bpy.types.Operator):
@@ -45,7 +45,7 @@ class PathEditor(bpy.types.Operator):
         # The original script
         scene = context.scene
         for obj in scene.objects:
-            obj.location.x += 1.0
+            obj.location.x += 5.0
 
         self.report({'INFO'}, "Mouse coords are %d %d" % (self.x, self.y))
         return {'FINISHED'}            # this lets blender know the operator finished successfully.
