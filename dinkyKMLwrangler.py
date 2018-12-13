@@ -1,5 +1,7 @@
 
 import math
+from functools import reduce
+from operator import add
 
 # class MyLittleProjection(object):
 #     pass
@@ -28,14 +30,17 @@ class ptsPoint(object):
             deltaNorthing = deltaLat * _NS_DIST_MULTIPLIER
             self.easting = _CENTER_EASTING + deltaEasting
             self.northing = _CENTER_NORTHING + deltaNorthing
+            self.x = 0.0
+            self.y = 0.0
         elif XYZ != None:
             raise NotImplementedError("ptsPoint class does not currently "
                                       "work for known XYZ coordinates.")
 
     def __str__(self):
         return "#: {4:0.2f} Lat: {2:0.5f}  Long: {3:0.5f}    N: {0:0.4f}  " \
-               "E: {1:0.4f}".format(self.northing, self.easting, self.lat,
-                                self.long, self.orderNumber)
+               "E: {1:0.4f}  Y: {5:0.3f}  X: {6:0.3f}".format(self.northing,
+                                self.easting, self.lat, self.long,
+                                self.orderNumber, self.y, self.x)
 
 if __name__ == '__main__':
     testPtExpectedEasting = 2091925.0
@@ -85,12 +90,30 @@ class DinkyKML(object):
                         seqNumber += 1
                 elif state == 'footers':
                     self.footerLines.append(aLine)
+        self.setAveragePointNE()
+
+        def computeZeroedPoints(ptList, avePoint):
+            for aPoint in ptList:
+                aPoint.x = aPoint.easting - avePoint[0]
+                aPoint.y = aPoint.northing - avePoint[1]
+
+        computeZeroedPoints(self.pointSequence, self.averagePoint)
+
         return
 
+    def getAverageXY(self):
+        AveX = reduce(add, (pt.easting for pt in self.pointSequence))
+        AveY = reduce(add, (pt.northing for pt in self.pointSequence))
+        pointLength = len(self.pointSequence)
+        retVal = (AveX / pointLength, AveY / pointLength)
+        return retVal
 
+    def setAveragePointNE(self):
+        self.averagePoint = self.getAverageXY()
 
 if __name__ == '__main__':
     fname = r"D:\SourceModules\Python\BlenderUAVtrack\testData\Afarm_Flight1.kml"
 
     kml = DinkyKML(fname)
+    # avePt = kml.getAverageXY()
     dbg = True
