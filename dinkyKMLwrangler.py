@@ -36,6 +36,13 @@ class ptsPoint(object):
             raise NotImplementedError("ptsPoint class does not currently "
                                       "work for known XYZ coordinates.")
 
+    @property
+    def xyz(self):
+        """
+        :return: x, y, z coordinates as a tuple.
+        """
+        return (self.x, self.y, self.z)
+
     def __str__(self):
         return "#: {4:0.2f} Lat: {2:0.5f}  Long: {3:0.5f}    N: {0:0.4f}  " \
                "E: {1:0.4f}  Y: {5:0.3f}  X: {6:0.3f}".format(self.northing,
