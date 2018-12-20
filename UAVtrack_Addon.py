@@ -16,6 +16,8 @@ bl_info = {
 
 try:
     import bpy
+    import bmesh
+    from Blender import *
 except:
     pass
 
@@ -23,6 +25,31 @@ except:
 
 testFile = r"D:\SourceModules\Python\BlenderUAVtrack\testData\Afarm_Flight1.kml"
 # pointSequence = dKw.DinkyKML(testFile)
+
+import bpy
+from mathutils import Vector
+
+w = 1 # weight
+listOfVectors = [Vector((0,0,0)),Vector((1,0,0)),Vector((2,0,0)),Vector((2,3,0)),
+        Vector((0,2,1))]
+
+# from http://blenderscripting.blogspot.com/2011/05/blender-25-python-bezier-from-list-of.html
+def MakePolyLine(objname, curvename, ptList):
+    curvedata = bpy.data.curves.new(name=curvename, type='CURVE')
+    curvedata.dimensions = '3D'
+
+    objectdata = bpy.data.objects.new(objname, curvedata)
+    objectdata.location = (0,0,0) #object origin
+    bpy.context.scene.objects.link(objectdata)
+
+    polyline = curvedata.splines.new('POLY')
+    polyline.points.add(len(ptList) - 1)
+    # for num in range(len(cList)):
+    #     x, y, z = cList[num]
+    #     polyline.points[num].co = (x, y, z, w)
+    for num, aPt in enumerate(ptList):
+        x, y, z = aPt
+        polyline.points[num].co = (x, y, z, 1)
 
 # class PathEditor(bpy.types.Panel):
 class PathEditor(bpy.types.Operator):
@@ -47,10 +74,22 @@ class PathEditor(bpy.types.Operator):
         self.alignment = dinky.DinkyKML(self.fileLocation)
         self.report({'INFO'}, "Loaded: " + str(self.alignment))
 
-        # The original script
-        scene = context.scene
-        for obj in scene.objects:
-            obj.location.x += 5.0
+        # Adapted from
+        # https://blender.stackexchange.com/a/21595/51056
+        # scene = context.scene
+        prevPt = self.alignment.pointSequence[0]
+        for aPt in self.alignment.pointSequence[1:]:
+            begPt = (prevPt.x, prevPt.y, prevPt.elev)
+            endPt = (aPt.x, aPt.y, aPt.elev)
+            MakePolyLine("FlightPath", "Segment1", [begPt, endPt])
+            prevPt = aPt
+
+        bpy.ops.mesh.primitive_uv_sphere_add(size=10.0,
+                        location=(prevPt.x, prevPt.y, prevPt.elev))
+
+        for aPoint in self.alignment.pointSequence:
+            bpy.ops.mesh.primitive_uv_sphere_add(size=10.0,
+                location=(aPoint.x, aPoint.y, aPoint.elev))
 
         return {'FINISHED'}            # this lets blender know the operator finished successfully.
 
