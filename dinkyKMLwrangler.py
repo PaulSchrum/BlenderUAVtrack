@@ -92,6 +92,7 @@ class DinkyKML(object):
                     self.footerLines.append(aLine)
         self.setAveragePointNE()
 
+
         def computeZeroedPoints(ptList, avePoint):
             for aPoint in ptList:
                 aPoint.x = aPoint.easting - avePoint[0]
@@ -100,6 +101,9 @@ class DinkyKML(object):
         computeZeroedPoints(self.pointSequence, self.averagePoint)
 
         return
+
+    def __str__(self):
+        return "Alignment: {0} Points".format(len(self.pointSequence))
 
     def getAverageXY(self):
         AveX = reduce(add, (pt.easting for pt in self.pointSequence))
