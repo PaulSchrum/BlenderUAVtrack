@@ -7,6 +7,8 @@ https://www.youtube.com/watch?v=OEkrQGFqM10
 I was able to get this addon to work, so now I will modify it to do what I need it to do.
 '''
 
+import dinkyKMLwrangler as dinky
+
 bl_info = {
     "name": "Paths",
     "category": "Object",
@@ -38,16 +40,18 @@ class PathEditor(bpy.types.Operator):
     def __init__(self):
         self.fileLocation = \
             r"D:\SourceModules\Python\BlenderUAVtrack\testData\Afarm_Flight1.kml"
-        pass
+        self.alignment = None
 
     def execute(self, context):        # execute() is called by blender when running the operator.
+
+        self.alignment = dinky.DinkyKML(self.fileLocation)
+        self.report({'INFO'}, "Loaded: " + str(self.alignment))
 
         # The original script
         scene = context.scene
         for obj in scene.objects:
             obj.location.x += 5.0
 
-        self.report({'INFO'}, "Mouse coords are %d %d" % (self.x, self.y))
         return {'FINISHED'}            # this lets blender know the operator finished successfully.
 
     def invoke(self, context, event):
