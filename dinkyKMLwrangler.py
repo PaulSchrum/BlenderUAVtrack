@@ -127,4 +127,4 @@ if __name__ == '__main__':
 
     kml = DinkyKML(fname)
     # avePt = kml.getAverageXY()
-    dbg = True
+

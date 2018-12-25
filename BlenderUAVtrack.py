@@ -4,7 +4,6 @@ https://docs.blender.org/api/blender_python_api_2_65_5/info_tutorial_addon.html
 Other help from:
 https://www.youtube.com/watch?v=OEkrQGFqM10
 
-I was able to get this addon to work, so now I will modify it to do what I need it to do.
 '''
 
 bl_info = {
